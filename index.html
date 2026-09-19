@@ -14,7 +14,6 @@
     background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1a1a2e);
     background-size: 400% 400%;
     animation: gradientBG 15s ease infinite;
-    overflow-x: hidden;
   }
   @keyframes gradientBG {
     0% { background-position: 0% 50%; }
@@ -88,6 +87,7 @@
     font-size: 1rem;
     width: 100%;
   }
+  .btn-main:disabled { opacity: 0.5; cursor: not-allowed; }
   .gallery {
     max-width: 1200px;
     margin: 50px auto;
@@ -164,6 +164,18 @@
     z-index: 10000;
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
+  .loading {
+    text-align: center;
+    color: #f9d423;
+    padding: 40px;
+    font-size: 1.1rem;
+  }
+  .empty {
+    text-align: center;
+    color: #888;
+    padding: 60px 20px;
+    font-size: 1.1rem;
+  }
 </style>
 </head>
 <body>
@@ -194,10 +206,12 @@
     <option value="Other">Other</option>
   </select>
 
-  <button class="btn-main" onclick="addCard()">🚀 Upload Karein</button>
+  <button class="btn-main" id="uploadBtn" onclick="addCard()">🚀 Upload Karein</button>
 </div>
 
-<div class="gallery" id="gallery"></div>
+<div class="gallery" id="gallery">
+  <div class="loading" id="loading">⏳ Gallery load ho rahi hai...</div>
+</div>
 
 <div class="contact">
   <h2>📞 Contact</h2>
@@ -210,17 +224,39 @@
 
 <div class="toast" id="toast">✅ Copied!</div>
 
-<script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBPvoo4ro_ZcTb8b4R0hjSpkmIFdwZ8R3A",
+    authDomain: "ai-prompt-vault-e81ab.firebaseapp.com",
+    projectId: "ai-prompt-vault-e81ab",
+    storageBucket: "ai-prompt-vault-e81ab.firebasestorage.app",
+    messagingSenderId: "191570252019",
+    appId: "1:191570252019:web:c9c8277ee0517496e5a786",
+    measurementId: "G-GC13MY4WJ4"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
   const gallery = document.getElementById('gallery');
   const imageInput = document.getElementById('imageInput');
   const promptInput = document.getElementById('promptInput');
   const categoryInput = document.getElementById('categoryInput');
   const preview = document.getElementById('preview');
+  const uploadBtn = document.getElementById('uploadBtn');
   let currentImage = '';
 
   imageInput.addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file) {
+      if (file.size > 900000) {
+        showToast('⚠️ Photo 900KB se choti honi chahiye!');
+        imageInput.value = '';
+        return;
+      }
       const reader = new FileReader();
       reader.onload = ev => {
         currentImage = ev.target.result;
@@ -248,23 +284,64 @@
     return card;
   }
 
-  function addCard() {
+  async function addCard() {
     const prompt = promptInput.value.trim();
     const category = categoryInput.value;
     if (!currentImage || !prompt) {
       showToast('⚠️ Photo aur prompt dono daalein!');
       return;
     }
-    gallery.prepend(createCard(currentImage, prompt, category));
-    saveCard(currentImage, prompt, category);
-    currentImage = '';
-    preview.style.display = 'none';
-    imageInput.value = '';
-    promptInput.value = '';
-    showToast('🎉 Upload successful!');
+
+    uploadBtn.disabled = true;
+    uploadBtn.textContent = '⏳ Upload ho raha hai...';
+
+    try {
+      await addDoc(collection(db, 'prompts'), {
+        image: currentImage,
+        prompt: prompt,
+        category: category,
+        createdAt: serverTimestamp()
+      });
+
+      gallery.prepend(createCard(currentImage, prompt, category));
+      currentImage = '';
+      preview.style.display = 'none';
+      imageInput.value = '';
+      promptInput.value = '';
+      showToast('🎉 Upload successful!');
+    } catch (error) {
+      console.error(error);
+      showToast('❌ Error: ' + error.message);
+    }
+
+    uploadBtn.disabled = false;
+    uploadBtn.textContent = '🚀 Upload Karein';
   }
 
-  function copyPrompt(btn, text) {
+  async function loadCards() {
+    try {
+      const q = query(collection(db, 'prompts'), orderBy('createdAt', 'desc'));
+      const snapshot = await getDocs(q);
+      const loading = document.getElementById('loading');
+      if (loading) loading.remove();
+
+      if (snapshot.empty) {
+        gallery.innerHTML = '<div class="empty">📭 Abhi koi prompt upload nahi hua. Pehla upload aap karein!</div>';
+        return;
+      }
+
+      gallery.innerHTML = '';
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        gallery.appendChild(createCard(data.image, data.prompt, data.category));
+      });
+    } catch (error) {
+      console.error(error);
+      gallery.innerHTML = '<div class="empty">❌ Gallery load nahi ho payi. Firebase rules check karein.</div>';
+    }
+  }
+
+  window.copyPrompt = function(btn, text) {
     navigator.clipboard.writeText(text).then(() => {
       btn.textContent = '✅ Copied!';
       showToast('📋 Prompt copied!');
@@ -278,7 +355,7 @@
       document.body.removeChild(ta);
       showToast('📋 Prompt copied!');
     });
-  }
+  };
 
   const toast = document.getElementById('toast');
   let toastTimer;
@@ -286,20 +363,11 @@
     toast.textContent = msg;
     toast.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
   }
 
-  function saveCard(img, prompt, category) {
-    let cards = JSON.parse(localStorage.getItem('aiCardsV3') || '[]');
-    cards.unshift({ img, prompt, category });
-    localStorage.setItem('aiCardsV3', JSON.stringify(cards));
-  }
-  function loadCards() {
-    let cards = JSON.parse(localStorage.getItem('aiCardsV3') || '[]');
-    cards.forEach(c => gallery.appendChild(createCard(c.img, c.prompt, c.category)));
-  }
   loadCards();
 </script>
 
 </body>
-  </html>
+</html>
