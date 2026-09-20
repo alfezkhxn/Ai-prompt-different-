@@ -115,6 +115,17 @@ function applyFilter(){ let f=[...allData]; if(activeCat!=='All') f=f.filter(x=>
 document.querySelectorAll('.fpill').forEach(p=>p.onclick=()=>{document.querySelectorAll('.fpill').forEach(x=>x.classList.remove('active')); p.classList.add('active'); activeCat=p.dataset.cat; applyFilter();});
 search.oninput=applyFilter;
 load();
-</script>
-</body>
- </html>
+  </script>
+
+<footer style="margin-top:80px; background:rgba(18,14,36,0.9); border:1px solid rgba(139,92,246,.25); border-radius:28px; padding:36px 20px; text-align:center;">
+  <h2 style="font-size:1.6rem; font-weight:800; background:linear-gradient(90deg,#fde047,#fb7185,#c084fc,#60a5fa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:10px;">Join Our Telegram Family</h2>
+  <p style="color:#9ca3af; font-size:.9rem; margin-bottom:22px;">Daily 50+ HD Prompts • Free Download • No Watermark</p>
+  <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+    <a href="https://t.me/AiPromptdifferent" target="_blank" style="display:inline-flex; align-items:center; gap:8px; background:linear-gradient(90deg,#3b82f6,#7c3aed); color:#fff; padding:14px 28px; border-radius:100px; text-decoration:none; font-weight:800;">✈️ Join Telegram</a>
+    <a href="mailto:alexushshshs@gmail.com" style="display:inline-flex; align-items:center; gap:8px; background:#fff; color:#000; padding:14px 28px; border-radius:100px; text-decoration:none; font-weight:800;">📧 Contact Us</a>
+  </div>
+  <p style="color:#888; font-size:.85rem; margin-top:20px;">📩 alexushshshs@gmail.com</p>
+</footer>
+
+  </body>
+     </html>
