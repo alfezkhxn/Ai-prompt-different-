@@ -14,8 +14,6 @@
     overflow-x: hidden;
     position: relative;
   }
-
-  /* Glowing Orbs */
   .orb {
     position: fixed;
     border-radius: 50%;
@@ -29,7 +27,6 @@
 
   .container { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 20px; }
 
-  /* Navbar */
   nav {
     display: flex;
     justify-content: space-between;
@@ -70,7 +67,6 @@
     font-size: 0.85rem;
   }
 
-  /* Hero */
   .hero { text-align: center; padding: 20px 0 60px; }
   .hero-badge {
     display: inline-flex;
@@ -102,7 +98,6 @@
     box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5);
   }
 
-  /* Upload Box */
   .upload-container {
     background: rgba(20, 15, 40, 0.6);
     backdrop-filter: blur(20px);
@@ -205,7 +200,6 @@
   .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.5); }
   .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  /* Featured Section */
   .section-header {
     display: flex;
     justify-content: space-between;
@@ -235,7 +229,6 @@
     font-size: 0.85rem;
   }
 
-  /* Gallery */
   .gallery {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -298,7 +291,6 @@
   .empty { text-align: center; color: #666; padding: 60px 20px; grid-column: 1/-1; }
   .loading { text-align: center; color: #a855f7; padding: 60px 20px; grid-column: 1/-1; }
 
-  /* Admin Button */
   .admin-btn {
     background: rgba(139, 92, 246, 0.2);
     border: 1px solid rgba(139, 92, 246, 0.5);
@@ -310,7 +302,6 @@
     font-weight: 600;
   }
 
-  /* Contact */
   .contact {
     background: rgba(20, 15, 40, 0.6);
     backdrop-filter: blur(10px);
@@ -342,7 +333,6 @@
   .email-btn { background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #93c5fd; }
   .tg-btn { background: linear-gradient(90deg, #3b82f6, #2563eb); color: #fff; }
 
-  /* Footer */
   footer {
     text-align: center;
     padding: 25px 0;
@@ -352,7 +342,6 @@
   }
   footer a { color: #a855f7; text-decoration: none; margin: 0 8px; }
 
-  /* Toast */
   .toast {
     position: fixed;
     bottom: 30px;
@@ -369,7 +358,61 @@
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
-  /* Mobile */
+  /* Login Modal */
+  #loginModal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(5px);
+  }
+  #loginModal.active { display: flex; }
+  .login-box {
+    background: #1a1030;
+    border: 1px solid rgba(139, 92, 246, 0.5);
+    border-radius: 24px;
+    padding: 30px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(139, 92, 246, 0.4);
+  }
+  .login-box h3 {
+    color: #fff;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.3rem;
+  }
+  .login-box input {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid rgba(139, 92, 246, 0.5);
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    font-family: inherit;
+  }
+  .login-box input:focus { outline: none; border-color: #8b5cf6; }
+  .login-buttons { display: flex; gap: 10px; }
+  .login-buttons button {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-family: inherit;
+  }
+  .login-btn-submit { background: linear-gradient(90deg, #8b5cf6, #3b82f6); color: #fff; }
+  .login-btn-cancel { background: rgba(255, 255, 255, 0.1); color: #fff; }
+
   @media (max-width: 768px) {
     .hero h1 { font-size: 2.2rem; }
     .nav-links { display: none; }
@@ -388,7 +431,6 @@
 
 <div class="container">
 
-  <!-- Navbar -->
   <nav>
     <div class="logo">
       <span>✨</span>
@@ -406,7 +448,6 @@
     </div>
   </nav>
 
-  <!-- Hero -->
   <div class="hero">
     <div class="hero-badge">
       <span>✨ Share</span>
@@ -421,7 +462,6 @@
     <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">Get latest prompts & updates</p>
   </div>
 
-  <!-- Upload Box (sirf admin) -->
   <div class="upload-container" id="uploadBox">
     <div class="upload-header">
       <div class="upload-icon">☁️</div>
@@ -457,19 +497,16 @@
     <button class="generate-btn" id="uploadBtn">✨ Generate & Add to Gallery</button>
   </div>
 
-  <!-- Featured -->
-  <div class="section-header">
+  <div class="section-header" id="gallery">
     <h2>🖼️ Featured <span class="gradient">Prompts & Images</span></h2>
     <a href="#gallery" class="view-all">View All →</a>
   </div>
   <p style="color: #888; margin-bottom: 25px; font-size: 0.9rem;">Browse through our collection of AI-generated images with detailed prompts.</p>
 
-  <!-- Gallery -->
-  <div class="gallery" id="gallery">
+  <div class="gallery" id="galleryGrid">
     <div class="loading" id="loading">⏳ Gallery load ho rahi hai...</div>
   </div>
 
-  <!-- Contact -->
   <div class="contact" id="contact">
     <div class="small-label">GET IN TOUCH</div>
     <h3>Have Questions or <span class="gradient">Suggestions?</span></h3>
@@ -480,13 +517,24 @@
     </div>
   </div>
 
-  <!-- Footer -->
   <footer>
     ✨ AI Prompt Different · Home · Gallery · Upload · About · Contact
     <br><br>
     © 2025 AI Prompt Different. All rights reserved.
   </footer>
 
+</div>
+
+<!-- Login Modal -->
+<div id="loginModal">
+  <div class="login-box">
+    <h3>🔐 Admin Login</h3>
+    <input type="password" id="adminPassInput" placeholder="Password daalein..." autocomplete="off">
+    <div class="login-buttons">
+      <button class="login-btn-submit" id="loginSubmit">✅ Login</button>
+      <button class="login-btn-cancel" id="loginCancel">❌ Cancel</button>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast">✅ Copied!</div>
@@ -510,7 +558,7 @@
 
   const ADMIN_PASSWORD = "New_alfez";
 
-  const gallery = document.getElementById('gallery');
+  const galleryGrid = document.getElementById('galleryGrid');
   const imageInput = document.getElementById('imageInput');
   const promptInput = document.getElementById('promptInput');
   const categoryInput = document.getElementById('categoryInput');
@@ -519,6 +567,10 @@
   const uploadBox = document.getElementById('uploadBox');
   const adminBtn = document.getElementById('adminBtn');
   const charCount = document.getElementById('charCount');
+  const loginModal = document.getElementById('loginModal');
+  const adminPassInput = document.getElementById('adminPassInput');
+  const loginSubmit = document.getElementById('loginSubmit');
+  const loginCancel = document.getElementById('loginCancel');
   let currentImage = '';
 
   promptInput.addEventListener('input', () => {
@@ -542,6 +594,7 @@
     updateDeleteButtons();
   }
 
+  // Admin button click
   adminBtn.addEventListener('click', function() {
     if (localStorage.getItem('isAdmin') === 'true') {
       if (confirm('Logout karna hai?')) {
@@ -555,7 +608,13 @@
       }
       return;
     }
-    const pass = prompt('🔐 Admin Password Daalein:');
+    loginModal.classList.add('active');
+    setTimeout(() => adminPassInput.focus(), 200);
+  });
+
+  // Login submit
+  loginSubmit.addEventListener('click', function() {
+    const pass = adminPassInput.value;
     if (pass === ADMIN_PASSWORD) {
       localStorage.setItem('isAdmin', 'true');
       uploadBox.classList.add('active');
@@ -564,78 +623,15 @@
       adminBtn.style.borderColor = 'rgba(34, 197, 94, 0.6)';
       showToast('🎉 Welcome Admin!');
       updateDeleteButtons();
-    } else if (pass !== null) {
+      loginModal.classList.remove('active');
+      adminPassInput.value = '';
+    } else {
       showToast('❌ Galat Password!');
+      adminPassInput.value = '';
     }
   });
 
-  imageInput.addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      const img = new Image();
-      img.onload = function() {
-        const canvas = document.createElement('canvas');
-        let width = img.width;
-        let height = img.height;
-        const maxSize = 1000;
-
-        if (width > height && width > maxSize) {
-          height = (height * maxSize) / width;
-          width = maxSize;
-        } else if (height > maxSize) {
-          width = (width * maxSize) / height;
-          height = maxSize;
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-
-        currentImage = canvas.toDataURL('image/jpeg', 0.7);
-        preview.src = currentImage;
-        preview.style.display = 'block';
-      };
-      img.src = ev.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-
-  function createCard(img, prompt, category, docId) {
-    const card = document.createElement('div');
-    card.className = 'card';
-    const safePrompt = prompt.replace(/"/g, '&quot;').replace(/'/g, "\\'");
-    card.innerHTML = `
-      <img src="${img}" alt="AI Art">
-      <div class="card-body">
-        <div class="card-label">📋 Prompt:</div>
-        <p class="card-prompt">${prompt}</p>
-        <div class="card-actions">
-          <button class="copy-btn" onclick="copyPrompt(this, '${safePrompt}')">📋 Copy</button>
-          <button class="delete-btn" onclick="deleteCard('${docId}')">🗑️</button>
-        </div>
-      </div>
-    `;
-    return card;
-  }
-
-  window.deleteCard = async function(docId) {
-    if (localStorage.getItem('isAdmin') !== 'true') {
-      showToast('❌ Sirf Admin delete kar sakta hai!');
-      return;
-    }
-    if (!confirm('🗑️ Pakka delete karna hai?')) return;
-
-    try {
-      await deleteDoc(doc(db, 'prompts', docId));
-      showToast('🗑️ Delete ho gaya!');
-      loadCards();
-    } catch (error) {
-      showToast('❌ Delete nahi hua!');
-    }
-  };
-
-  uploadBtn.addEventListener('click                      
+  // Login cancel
+  loginCancel.addEventListener('click', function() {
+    loginModal.classList.remove('active');
+    adminPassInpu
