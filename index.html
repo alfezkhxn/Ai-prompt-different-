@@ -57,9 +57,7 @@
     font-weight: 600;
     color: #f9d423;
   }
-  .upload-box input[type="file"],
-  .upload-box textarea,
-  .upload-box select {
+  .upload-box input, .upload-box textarea, .upload-box select {
     width: 100%;
     padding: 12px;
     border-radius: 12px;
@@ -69,13 +67,8 @@
     margin-bottom: 15px;
     font-size: 1rem;
   }
-  .upload-box textarea { min-height: 120px; resize: vertical; }
-  #preview {
-    max-width: 100%;
-    border-radius: 12px;
-    margin-bottom: 15px;
-    display: none;
-  }
+  .upload-box textarea { min-height: 120px; }
+  #preview { max-width: 100%; border-radius: 12px; margin-bottom: 15px; display: none; }
   .btn-main {
     background: linear-gradient(90deg, #f9d423, #ff4e50);
     color: #000;
@@ -87,7 +80,7 @@
     font-size: 1rem;
     width: 100%;
   }
-  .btn-main:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-main:disabled { opacity: 0.6; }
   .gallery {
     max-width: 1200px;
     margin: 50px auto;
@@ -100,26 +93,11 @@
     border-radius: 18px;
     overflow: hidden;
     border: 1px solid rgba(255,255,255,0.15);
-    transition: transform 0.3s;
   }
-  .card:hover { transform: translateY(-8px); }
   .card img { width: 100%; height: 300px; object-fit: cover; }
   .card-content { padding: 15px; }
-  .card-content h3 {
-    color: #f9d423;
-    font-size: 1rem;
-    margin-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .card-content p {
-    font-size: 0.9rem;
-    color: #ccc;
-    line-height: 1.5;
-    max-height: 120px;
-    overflow-y: auto;
-  }
+  .card-content h3 { color: #f9d423; font-size: 1rem; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .card-content p { font-size: 0.9rem; color: #ccc; line-height: 1.5; max-height: 120px; overflow-y: auto; }
   .copy-btn {
     background: linear-gradient(90deg, #00c9ff, #92fe9d);
     color: #000;
@@ -140,15 +118,28 @@
     border: 1px solid rgba(255,255,255,0.1);
   }
   .contact h2 { color: #f9d423; margin-bottom: 15px; }
+  .contact p { color: #ccc; margin-bottom: 12px; }
   .contact a { color: #ff4e50; text-decoration: none; font-weight: bold; }
+  .contact .email-btn {
+    display: inline-block;
+    margin-top: 10px;
+    background: linear-gradient(90deg, #ea4335, #fbbc05);
+    color: #fff;
+    padding: 12px 30px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(234,67,53,0.4);
+  }
   .contact .tg-link {
     display: inline-block;
     margin-top: 10px;
     background: linear-gradient(90deg, #0088cc, #00bfff);
     color: #fff;
-    padding: 10px 24px;
+    padding: 12px 30px;
     border-radius: 25px;
     text-decoration: none;
+    font-weight: bold;
   }
   .toast {
     position: fixed;
@@ -164,18 +155,8 @@
     z-index: 10000;
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
-  .loading {
-    text-align: center;
-    color: #f9d423;
-    padding: 40px;
-    font-size: 1.1rem;
-  }
-  .empty {
-    text-align: center;
-    color: #888;
-    padding: 60px 20px;
-    font-size: 1.1rem;
-  }
+  .loading { text-align: center; color: #f9d423; padding: 40px; grid-column: 1/-1; }
+  .empty { text-align: center; color: #888; padding: 60px 20px; grid-column: 1/-1; }
 </style>
 </head>
 <body>
@@ -206,7 +187,7 @@
     <option value="Other">Other</option>
   </select>
 
-  <button class="btn-main" id="uploadBtn" onclick="addCard()">🚀 Upload Karein</button>
+  <button class="btn-main" id="uploadBtn">🚀 Upload Karein</button>
 </div>
 
 <div class="gallery" id="gallery">
@@ -214,9 +195,12 @@
 </div>
 
 <div class="contact">
-  <h2>📞 Contact</h2>
-  <p>Email: <a href="mailto:aapka@email.com">aapka@email.com</a></p>
-  <p style="margin-top:15px;">Telegram Channel:</p>
+  <h2>📞 Contact Karein</h2>
+  <p>Koi bhi sawaal, suggestion, ya content ke liye contact karein:</p>
+  <a href="mailto:alfeznewking@gmail.com" class="email-btn">
+    📧 alfeznewking@gmail.com
+  </a>
+  <p style="margin-top:20px;">Telegram Channel Join Karein:</p>
   <a href="https://t.me/AiPromptdifferent" target="_blank" class="tg-link">
     ✈️ @AiPromptdifferent
   </a>
@@ -251,20 +235,37 @@
 
   imageInput.addEventListener('change', function(e) {
     const file = e.target.files[0];
-    if (file) {
-      if (file.size > 900000) {
-        showToast('⚠️ Photo 900KB se choti honi chahiye!');
-        imageInput.value = '';
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = ev => {
-        currentImage = ev.target.result;
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        const maxSize = 1000;
+
+        if (width > height && width > maxSize) {
+          height = (height * maxSize) / width;
+          width = maxSize;
+        } else if (height > maxSize) {
+          width = (width * maxSize) / height;
+          height = maxSize;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        currentImage = canvas.toDataURL('image/jpeg', 0.7);
         preview.src = currentImage;
         preview.style.display = 'block';
       };
-      reader.readAsDataURL(file);
-    }
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
   });
 
   function createCard(img, prompt, category) {
@@ -284,11 +285,16 @@
     return card;
   }
 
-  async function addCard() {
+  uploadBtn.addEventListener('click', async function() {
     const prompt = promptInput.value.trim();
     const category = categoryInput.value;
-    if (!currentImage || !prompt) {
-      showToast('⚠️ Photo aur prompt dono daalein!');
+
+    if (!currentImage) {
+      showToast('⚠️ Photo upload karein!');
+      return;
+    }
+    if (!prompt) {
+      showToast('⚠️ Prompt likhein!');
       return;
     }
 
@@ -312,11 +318,12 @@
     } catch (error) {
       console.error(error);
       showToast('❌ Error: ' + error.message);
+      alert('Error: ' + error.message);
     }
 
     uploadBtn.disabled = false;
     uploadBtn.textContent = '🚀 Upload Karein';
-  }
+  });
 
   async function loadCards() {
     try {
@@ -337,7 +344,7 @@
       });
     } catch (error) {
       console.error(error);
-      gallery.innerHTML = '<div class="empty">❌ Gallery load nahi ho payi. Firebase rules check karein.</div>';
+      gallery.innerHTML = '<div class="empty">❌ Gallery load nahi hui: ' + error.message + '</div>';
     }
   }
 
@@ -346,14 +353,6 @@
       btn.textContent = '✅ Copied!';
       showToast('📋 Prompt copied!');
       setTimeout(() => btn.textContent = '📋 Copy', 1500);
-    }).catch(() => {
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      showToast('📋 Prompt copied!');
     });
   };
 
@@ -370,4 +369,4 @@
 </script>
 
 </body>
-</html>
+ </html>
