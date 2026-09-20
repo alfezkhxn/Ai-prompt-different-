@@ -42,6 +42,19 @@
     font-weight: bold;
     box-shadow: 0 4px 20px rgba(0,136,204,0.5);
   }
+  .admin-btn {
+    display: inline-block;
+    margin-top: 15px;
+    margin-left: 10px;
+    background: linear-gradient(90deg, #f9d423, #ff4e50);
+    color: #000;
+    padding: 10px 24px;
+    border-radius: 30px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
   .upload-box {
     max-width: 700px;
     margin: 20px auto;
@@ -50,7 +63,9 @@
     border-radius: 20px;
     padding: 30px;
     backdrop-filter: blur(15px);
+    display: none;
   }
+  .upload-box.active { display: block; }
   .upload-box label {
     display: block;
     margin-bottom: 8px;
@@ -81,6 +96,17 @@
     width: 100%;
   }
   .btn-main:disabled { opacity: 0.6; }
+  .logout-btn {
+    background: linear-gradient(90deg, #ff4e50, #f9d423);
+    color: #000;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 0.85rem;
+  }
   .gallery {
     max-width: 1200px;
     margin: 50px auto;
@@ -129,7 +155,6 @@
     border-radius: 25px;
     text-decoration: none;
     font-weight: bold;
-    box-shadow: 0 4px 15px rgba(234,67,53,0.4);
   }
   .contact .tg-link {
     display: inline-block;
@@ -167,9 +192,10 @@
   <a href="https://t.me/AiPromptdifferent" target="_blank" class="telegram-btn">
     ✈️ Join Telegram Channel
   </a>
+  <button class="admin-btn" id="adminBtn">🔐 Admin Login</button>
 </header>
 
-<div class="upload-box">
+<div class="upload-box" id="uploadBox">
   <label>📷 Photo Upload Karein</label>
   <input type="file" id="imageInput" accept="image/*">
   <img id="preview" alt="preview">
@@ -188,6 +214,7 @@
   </select>
 
   <button class="btn-main" id="uploadBtn">🚀 Upload Karein</button>
+  <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
 </div>
 
 <div class="gallery" id="gallery">
@@ -225,13 +252,54 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
+  // 🔐 ADMIN PASSWORD
+  const ADMIN_PASSWORD = "New_alfez";
+
   const gallery = document.getElementById('gallery');
   const imageInput = document.getElementById('imageInput');
   const promptInput = document.getElementById('promptInput');
   const categoryInput = document.getElementById('categoryInput');
   const preview = document.getElementById('preview');
   const uploadBtn = document.getElementById('uploadBtn');
+  const uploadBox = document.getElementById('uploadBox');
+  const adminBtn = document.getElementById('adminBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
   let currentImage = '';
+
+  function checkAdmin() {
+    if (localStorage.getItem('isAdmin') === 'true') {
+      uploadBox.classList.add('active');
+      adminBtn.textContent = '✅ Admin Logged In';
+      adminBtn.style.background = 'linear-gradient(90deg, #00c9ff, #92fe9d)';
+    }
+  }
+
+  adminBtn.addEventListener('click', function() {
+    if (localStorage.getItem('isAdmin') === 'true') {
+      showToast('✅ Aap pehle se logged in hain!');
+      return;
+    }
+    const pass = prompt('🔐 Admin Password Daalein:');
+    if (pass === ADMIN_PASSWORD) {
+      localStorage.setItem('isAdmin', 'true');
+      uploadBox.classList.add('active');
+      adminBtn.textContent = '✅ Admin Logged In';
+      adminBtn.style.background = 'linear-gradient(90deg, #00c9ff, #92fe9d)';
+      showToast('🎉 Welcome Admin!');
+    } else if (pass !== null) {
+      showToast('❌ Galat Password!');
+    }
+  });
+
+  logoutBtn.addEventListener('click', function() {
+    localStorage.removeItem('isAdmin');
+    uploadBox.classList.remove('active');
+    adminBtn.textContent = '🔐 Admin Login';
+    adminBtn.style.background = 'linear-gradient(90deg, #f9d423, #ff4e50)';
+    showToast('🚪 Logout ho gaya!');
+  });
+
+  checkAdmin();
 
   imageInput.addEventListener('change', function(e) {
     const file = e.target.files[0];
@@ -286,6 +354,11 @@
   }
 
   uploadBtn.addEventListener('click', async function() {
+    if (localStorage.getItem('isAdmin') !== 'true') {
+      showToast('❌ Pehle Admin Login karein!');
+      return;
+    }
+
     const prompt = promptInput.value.trim();
     const category = categoryInput.value;
 
@@ -318,7 +391,6 @@
     } catch (error) {
       console.error(error);
       showToast('❌ Error: ' + error.message);
-      alert('Error: ' + error.message);
     }
 
     uploadBtn.disabled = false;
