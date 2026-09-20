@@ -3,119 +3,204 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Prompt Different - HD Version</title>
+<title>AI Prompt Different - HD Fixed</title>
 <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Segoe UI', sans-serif; color: #fff; min-height: 100vh; background: #0a0618; overflow-x: hidden; position: relative; }
-  .orb { position: fixed; border-radius: 50%; filter: blur(80px); z-index: 0; pointer-events: none; }
-  .orb-1 { width: 400px; height: 400px; background: rgba(139, 92, 246, 0.4); top: -100px; left: -100px; }
-  .orb-2 { width: 350px; height: 350px; background: rgba(59, 130, 246, 0.3); top: 200px; right: -100px; }
-  .orb-3 { width: 300px; height: 300px; background: rgba(168, 85, 247, 0.3); bottom: 100px; left: -80px; }
-  .container { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 20px; }
-  nav { display: flex; justify-content: space-between; align-items: center; background: rgba(20, 15, 40, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 50px; padding: 12px 24px; margin-bottom: 60px; flex-wrap: wrap; gap: 10px; }
-  .logo { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 1.1rem; }
-  .logo .different { background: linear-gradient(90deg, #f9d423, #ff4e50, #a855f7, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .nav-links { display: flex; gap: 25px; } .nav-links a { color: #aaa; text-decoration: none; font-size: 0.9rem; }
-  .join-btn { background: linear-gradient(90deg, #3b82f6, #2563eb); color: #fff; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: 600; font-size: 0.85rem; }
-  .hero { text-align: center; padding: 20px 0 60px; }
-  .hero-badge { display: inline-flex; gap: 15px; background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3); padding: 8px 20px; border-radius: 30px; font-size: 0.8rem; color: #c4b5fd; margin-bottom: 25px; }
-  .hero h1 { font-size: 4rem; font-weight: 900; line-height: 1.1; margin-bottom: 20px; background: linear-gradient(90deg, #f9d423, #ff4e50, #a855f7, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .hero p { color: #b0b0c0; font-size: 1.1rem; margin-bottom: 25px; }
-  .upload-container { background: rgba(20, 15, 40, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 24px; padding: 30px; margin-bottom: 60px; display: none; }
-  .upload-container.active { display: block; }
-  .upload-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
-  .upload-icon { width: 50px; height: 50px; background: linear-gradient(135deg, #8b5cf6, #3b82f6); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
-  .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-  .file-drop { border: 2px dashed rgba(139, 92, 246, 0.4); border-radius: 16px; padding: 30px 20px; text-align: center; cursor: pointer; background: rgba(139, 92, 246, 0.05); min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  #preview { max-width: 100%; max-height: 200px; border-radius: 12px; margin-top: 10px; }
-  .prompt-area textarea { width: 100%; min-height: 160px; padding: 15px; border-radius: 16px; border: 1px solid rgba(139, 92, 246, 0.3); background: rgba(10, 6, 24, 0.6); color: #fff; font-size: 0.9rem; resize: vertical; font-family: inherit; }
-  .category-select { width: 100%; padding: 12px 15px; border-radius: 12px; border: 1px solid rgba(139, 92, 246, 0.3); background: rgba(10, 6, 24, 0.6); color: #fff; font-size: 0.9rem; margin-bottom: 15px; margin-top: 15px;}
-  .generate-btn { width: 100%; padding: 16px; border: none; border-radius: 16px; background: linear-gradient(90deg, #8b5cf6, #3b82f6); color: #fff; font-weight: 700; font-size: 1rem; cursor: pointer; }
-  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-bottom: 60px; }
-  .card { background: rgba(20, 15, 40, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 20px; overflow: hidden; }
-  .card img { width: 100%; height: 220px; object-fit: cover; }
-  .card-body { padding: 16px; } .card-prompt { font-size: 0.85rem; color: #ccc; margin-bottom: 12px; max-height: 80px; overflow-y: auto; }
-  .card-actions { display: flex; gap: 8px; }
-  .copy-btn { flex: 1; background: linear-gradient(90deg, #3b82f6, #8b5cf6); border: none; color: #fff; padding: 10px; border-radius: 10px; font-weight: 600; cursor: pointer; }
-  .delete-btn { background: linear-gradient(90deg, #ef4444, #f97316); border: none; color: #fff; padding: 10px 14px; border-radius: 10px; cursor: pointer; display: none; }
-  .delete-btn.show { display: block; }
-  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: linear-gradient(90deg, #8b5cf6, #3b82f6); color: #fff; padding: 14px 28px; border-radius: 30px; font-weight: 600; transition: transform 0.4s; z-index: 10000; }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-  .admin-btn { background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.5); color: #c4b5fd; padding: 8px 16px; border-radius: 25px; font-size: 0.8rem; cursor: pointer; font-weight: 600; }
-  @media (max-width: 768px) { .hero h1 { font-size: 2.2rem; } .upload-grid { grid-template-columns: 1fr; } }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',sans-serif;color:#fff;min-height:100vh;background:#0a0618;overflow-x:hidden;position:relative}
+ .orb{position:fixed;border-radius:50%;filter:blur(80px);z-index:0;pointer-events:none}
+ .orb-1{width:400px;height:400px;background:rgba(139,92,246,0.4);top:-100px;left:-100px}
+ .orb-2{width:350px;height:350px;background:rgba(59,130,246,0.3);top:200px;right:-100px}
+ .orb-3{width:300px;height:300px;background:rgba(168,85,247,0.3);bottom:100px;left:-80px}
+ .container{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:20px}
+  nav{display:flex;justify-content:space-between;align-items:center;background:rgba(20,15,40,0.7);backdrop-filter:blur(20px);border:1px solid rgba(139,92,246,0.2);border-radius:50px;padding:12px 24px;margin-bottom:60px}
+ .logo{display:flex;align-items:center;gap:10px;font-weight:bold;font-size:1.1rem}
+ .logo span.different{background:linear-gradient(90deg,#f9d423,#ff4e50,#a855f7,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+ .join-btn{background:linear-gradient(90deg,#3b82f6,#2563eb);color:#fff;padding:10px 20px;border-radius:30px;text-decoration:none;font-weight:600;font-size:0.85rem}
+ .hero{text-align:center;padding:20px 0 60px}
+ .hero-badge{display:inline-flex;gap:15px;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);padding:8px 20px;border-radius:30px;font-size:0.8rem;color:#c4b5fd;margin-bottom:25px}
+ .hero h1{font-size:3.5rem;font-weight:900;line-height:1.1;margin-bottom:20px;background:linear-gradient(90deg,#f9d423,#ff4e50,#a855f7,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+ .upload-container{background:rgba(20,15,40,0.6);backdrop-filter:blur(20px);border:1px solid rgba(139,92,246,0.3);border-radius:24px;padding:30px;margin-bottom:60px;display:none}
+ .upload-container.active{display:block}
+ .upload-header{display:flex;align-items:center;gap:15px;margin-bottom:25px}
+ .upload-icon{width:50px;height:50px;background:linear-gradient(135deg,#8b5cf6,#3b82f6);border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+ .upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}
+ .file-drop{border:2px dashed rgba(139,92,246,0.4);border-radius:16px;padding:30px 20px;text-align:center;cursor:pointer;background:rgba(139,92,246,0.05);min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  #preview{max-width:100%;max-height:200px;border-radius:12px;margin-top:10px}
+ .prompt-area textarea{width:100%;min-height:160px;padding:15px;border-radius:16px;border:1px solid rgba(139,92,246,0.3);background:rgba(10,6,24,0.6);color:#fff;font-size:0.9rem;resize:vertical}
+ .category-select{width:100%;padding:12px 15px;border-radius:12px;border:1px solid rgba(139,92,246,0.3);background:rgba(10,6,24,0.6);color:#fff;font-size:0.9rem;margin:15px 0}
+ .generate-btn{width:100%;padding:16px;border:none;border-radius:16px;background:linear-gradient(90deg,#8b5cf6,#3b82f6);color:#fff;font-weight:700;font-size:1rem;cursor:pointer}
+ .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin-bottom:60px}
+ .card{background:rgba(20,15,40,0.6);backdrop-filter:blur(10px);border:1px solid rgba(139,92,246,0.25);border-radius:20px;overflow:hidden}
+ .card img{width:100%;height:220px;object-fit:cover}
+ .card-body{padding:16px}
+ .card-prompt{font-size:0.85rem;color:#ccc;margin-bottom:12px;max-height:80px;overflow-y:auto}
+ .card-actions{display:flex;gap:8px}
+ .copy-btn{flex:1;background:linear-gradient(90deg,#3b82f6,#8b5cf6);border:none;color:#fff;padding:10px;border-radius:10px;font-weight:600;cursor:pointer}
+ .delete-btn{background:linear-gradient(90deg,#ef4444,#f97316);border:none;color:#fff;padding:10px 14px;border-radius:10px;cursor:pointer;display:none}
+ .delete-btn.show{display:block}
+ .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:linear-gradient(90deg,#8b5cf6,#3b82f6);color:#fff;padding:14px 28px;border-radius:30px;font-weight:600;transition:transform 0.4s;z-index:10000}
+ .toast.show{transform:translateX(-50%) translateY(0)}
+ .admin-btn{background:rgba(139,92,246,0.2);border:1px solid rgba(139,92,246,0.5);color:#c4b5fd;padding:8px 16px;border-radius:25px;font-size:0.8rem;cursor:pointer;font-weight:600}
+  @media(max-width:768px){.hero h1{font-size:2.2rem}.upload-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
 <div class="container">
-  <nav>
-    <div class="logo"><span>✨</span><span>AI Prompt <span class="different">Different</span></span></div>
-    <div style="display: flex; gap: 8px;"><button class="admin-btn" id="adminBtn">🔐 Admin</button><a href="https://t.me/AiPromptdifferent" target="_blank" class="join-btn">✈️ Join Telegram</a></div>
-  </nav>
-  <div class="hero">
-    <div class="hero-badge"><span>✨ Share</span><span>·</span><span>🔍 Explore</span><span>·</span><span>🎨 Create</span></div>
-    <h1>AI Prompt Different</h1>
-    <p>HD Quality - 100% Free Forever</p>
-  </div>
-  <div class="upload-container" id="uploadBox">
-    <div class="upload-header"><div class="upload-icon">☁️</div><div><h3>Upload HD Photo (Original Quality)</h3><p>Quality 100% rahegi - ImgBB pe jayegi</p></div></div>
-    <div class="upload-grid">
-      <label class="file-drop" for="imageInput"><div>⬆️</div><div>Click to upload HD photo</div><div style="color:#888;font-size:0.8rem;">JPG, PNG, WEBP (Max 32MB)</div><img id="preview" style="display:none;"><input type="file" id="imageInput" accept="image/*" style="display:none;"></label>
-      <div class="prompt-area">
-        <textarea id="promptInput" placeholder="Your prompt here..." maxlength="1000"></textarea>
-        <div style="text-align:right;color:#666;font-size:0.75rem;"><span id="charCount">0</span>/1000</div>
-        <select class="category-select" id="categoryInput"><option value="Fantasy">Fantasy</option><option value="Portrait">Portrait</option><option value="Nature">Nature</option><option value="Sci-Fi">Sci-Fi</option><option value="Anime">Anime</option><option value="Other">Other</option></select>
-      </div>
-    </div>
-    <button class="generate-btn" id="uploadBtn">✨ Upload HD & Add to Gallery</button>
-  </div>
-  <div class="gallery" id="gallery"><div style="color:#a855f7;text-align:center;grid-column:1/-1;padding:60px;">⏳ Gallery load ho rahi hai...</div></div>
+<nav>
+<div class="logo"><span>✨</span><span>AI Prompt <span class="different">Different</span></span></div>
+<div style="display:flex;gap:8px;align-items:center;"><button class="admin-btn" id="adminBtn">🔐 Admin</button><a href="https://t.me/AiPromptdifferent" target="_blank" class="join-btn">✈️ Join Telegram</a></div>
+</nav>
+<div class="hero">
+<div class="hero-badge"><span>✨ Share</span><span>·</span><span>🔍 Explore</span><span>·</span><span>🎨 Create</span></div>
+<h1>AI Prompt Different</h1>
+<p>HD Quality - 100% Free Forever</p>
+</div>
+<div class="upload-container" id="uploadBox">
+<div class="upload-header"><div class="upload-icon">☁️</div><div><h3>Upload HD Photo</h3><p style="color:#aaa;font-size:0.85rem;">Original Quality - No Compression</p></div></div>
+<div class="upload-grid">
+<label class="file-drop" for="imageInput"><div>⬆️</div><div>Click to upload</div><div style="color:#888;font-size:0.8rem;">Max 32MB</div><img id="preview" style="display:none;"><input type="file" id="imageInput" accept="image/*" style="display:none;"></label>
+<div class="prompt-area">
+<textarea id="promptInput" placeholder="Your prompt here..." maxlength="1000"></textarea>
+<div style="text-align:right;color:#666;font-size:0.75rem;"><span id="charCount">0</span>/1000</div>
+<select class="category-select" id="categoryInput"><option value="Fantasy">Fantasy</option><option value="Portrait">Portrait</option><option value="Nature">Nature</option><option value="Sci-Fi">Sci-Fi</option><option value="Anime">Anime</option><option value="Other">Other</option></select>
+</div>
+</div>
+<button class="generate-btn" id="uploadBtn">✨ Upload HD & Add to Gallery</button>
+</div>
+<div class="gallery" id="gallery"><div style="color:#a855f7;text-align:center;grid-column:1/-1;padding:60px;">⏳ Gallery load ho rahi hai...</div></div>
 </div>
 <div class="toast" id="toast"></div>
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-  const firebaseConfig = {
-    apiKey: "AIzaSyBPvoo4ro_ZcTb8b4R0hjSpkmIFdwZ8R3A",
-    authDomain: "ai-prompt-vault-e81ab.firebaseapp.com",
-    projectId: "ai-prompt-vault-e81ab",
-    storageBucket: "ai-prompt-vault-e81ab.firebasestorage.app",
-    messagingSenderId: "191570252019",
-    appId: "1:191570252019:web:c9c8277ee0517496e5a786"
-  };
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const IMGBB_API_KEY = "a494b7fff5c7c929b19f0998d4c44f38";
-  const ADMIN_PASSWORD = "New_alfez";
-  const gallery = document.getElementById('gallery');
-  const imageInput = document.getElementById('imageInput');
-  const promptInput = document.getElementById('promptInput');
-  const categoryInput = document.getElementById('categoryInput');
-  const preview = document.getElementById('preview');
-  const uploadBtn = document.getElementById('uploadBtn');
-  const uploadBox = document.getElementById('uploadBox');
-  const adminBtn = document.getElementById('adminBtn');
-  const charCount = document.getElementById('charCount');
-  let selectedFile = null;
-  promptInput.addEventListener('input', () => charCount.textContent = promptInput.value.length);
-  function checkAdmin(){ if(localStorage.getItem('isAdmin')==='true'){ uploadBox.classList.add('active'); adminBtn.textContent='✅ Admin'; } updateDeleteButtons(); }
-  function updateDeleteButtons(){ const isAdmin = localStorage.getItem('isAdmin')==='true'; document.querySelectorAll('.delete-btn').forEach(b=>b.classList.toggle('show', isAdmin)); }
-  checkAdmin();
-  adminBtn.addEventListener('click', ()=>{ if(localStorage.getItem('isAdmin')==='true'){ if(confirm('Logout?')){ localStorage.removeItem('isAdmin'); uploadBox.classList.remove('active'); adminBtn.textContent='🔐 Admin'; showToast('🚪 Logout'); updateDeleteButtons(); } return; } const p=prompt('🔐 Password:'); if(p===ADMIN_PASSWORD){ localStorage.setItem('isAdmin','true'); uploadBox.classList.add('active'); adminBtn.textContent='✅ Admin'; showToast('🎉 Welcome Admin!'); updateDeleteButtons(); } else if(p!==null) showToast('❌ Galat Password!'); });
-  imageInput.addEventListener('change', e=>{ const file=e.target.files[0]; if(!file) return; selectedFile=file; const reader=new FileReader(); reader.onload=ev=>{ preview.src=ev.target.result; preview.style.display='block'; }; reader.readAsDataURL(file); });
-  function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
-  window.copyPrompt = (btn, text)=>{ navigator.clipboard.writeText(text).then(()=>{ btn.textContent='✅ Copied!'; showToast('✅ Copied!'); setTimeout(()=>btn.textContent='📋 Copy',2000); }); };
-  window.deleteCard = async (id)=>{ if(localStorage.getItem('isAdmin')!=='true'){ showToast('❌ Sirf Admin!'); return; } if(!confirm('Delete?')) return; await deleteDoc(doc(db,'prompts',id)); showToast('🗑️ Deleted!'); loadCards(); };
-  async function uploadToImgBB(file){
-    const formData = new FormData(); formData.append('image', file);
-    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
-    const data = await res.json();
-    if(!data.success) throw new Error('ImgBB upload failed');
-    return data.data.url;
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, serverTimestamp, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyBPvoo4ro_ZcTb8b4R0hjSpkmIFdwZ8R3A",
+  authDomain: "ai-prompt-vault-e81ab.firebaseapp.com",
+  projectId: "ai-prompt-vault-e81ab",
+  storageBucket: "ai-prompt-vault-e81ab.firebasestorage.app",
+  messagingSenderId: "191570252019",
+  appId: "1:191570252019:web:c9c8277ee0517496e5a786"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const IMGBB_API_KEY = "a494b7fff5c7c929b19f0998d4c44f38";
+const ADMIN_PASSWORD = "New_alfez";
+const gallery = document.getElementById('gallery');
+const imageInput = document.getElementById('imageInput');
+const promptInput = document.getElementById('promptInput');
+const categoryInput = document.getElementById('categoryInput');
+const preview = document.getElementById('preview');
+const uploadBtn = document.getElementById('uploadBtn');
+const uploadBox = document.getElementById('uploadBox');
+const adminBtn = document.getElementById('adminBtn');
+const charCount = document.getElementById('charCount');
+let selectedFile = null;
+promptInput.addEventListener('input', ()=> charCount.textContent = promptInput.value.length);
+function checkAdmin(){
+  if(localStorage.getItem('isAdmin')==='true'){
+    uploadBox.classList.add('active');
+    adminBtn.textContent='✅ Admin Mode';
   }
-  uploadBtn.addEventListener('click', async ()=>{
-    if(!selectedFile){ showToast('❌ Photo select karo!'); return; }
-    if(!promptInput.value.trim()){ showToast('❌ Prompt likho!'); return; }
-    uploadBtn.disabled=true; uploadBtn.textContent='⏳ HD Upload...';
-    try{
-      const imageUrl = await uploadToImgBB(selectedFile
+}
+checkAdmin();
+adminBtn.addEventListener('click', ()=>{
+  if(localStorage.getItem('isAdmin')==='true'){
+    if(confirm('Logout Admin?')){
+      localStorage.removeItem('isAdmin');
+      uploadBox.classList.remove('active');
+      adminBtn.textContent='🔐 Admin';
+      showToast('🚪 Logged out');
+      document.querySelectorAll('.delete-btn').forEach(b=>b.style.display='none');
+    }
+    return;
+  }
+  const p = prompt('🔐 Admin Password:');
+  if(p === ADMIN_PASSWORD){
+    localStorage.setItem('isAdmin','true');
+    uploadBox.classList.add('active');
+    adminBtn.textContent='✅ Admin Mode';
+    showToast('🎉 Admin Login Success!');
+    loadCards();
+  } else if(p!== null){
+    showToast('❌ Wrong Password!');
+  }
+});
+imageInput.addEventListener('change', e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  selectedFile = file;
+  const reader = new FileReader();
+  reader.onload = ev=>{ preview.src = ev.target.result; preview.style.display='block'; };
+  reader.readAsDataURL(file);
+});
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+window.copyPrompt = (btn, text)=>{
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='✅ Copied!';
+    showToast('✅ Copied!');
+    setTimeout(()=>btn.textContent='📋 Copy',2000);
+  });
+};
+window.deleteCard = async (id)=>{
+  if(localStorage.getItem('isAdmin')!=='true'){ showToast('❌ Admin only!'); return; }
+  if(!confirm('Delete this?')) return;
+  await deleteDoc(doc(db,'prompts',id));
+  showToast('🗑️ Deleted!');
+  loadCards();
+};
+async function uploadToImgBB(file){
+  const formData = new FormData();
+  formData.append('image', file);
+  const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method:'POST', body:formData });
+  const data = await res.json();
+  if(!data.success) throw new Error('Upload failed');
+  return data.data.url;
+}
+uploadBtn.addEventListener('click', async ()=>{
+  if(!selectedFile){ showToast('❌ Photo select karo!'); return; }
+  if(!promptInput.value.trim()){ showToast('❌ Prompt likho!'); return; }
+  uploadBtn.disabled=true;
+  uploadBtn.textContent='⏳ HD Upload ho raha hai...';
+  try{
+    const imageUrl = await uploadToImgBB(selectedFile);
+    await addDoc(collection(db,'prompts'), { image: imageUrl, prompt: promptInput.value.trim(), category: categoryInput.value, createdAt: serverTimestamp() });
+    showToast('🎉 HD Upload Success!');
+    promptInput.value=''; preview.style.display='none'; selectedFile=null; charCount.textContent='0';
+    loadCards();
+  }catch(e){ console.error(e); showToast('❌ Error: '+e.message); }
+  finally{ uploadBtn.disabled=false; uploadBtn.textContent='✨ Upload HD & Add to Gallery'; }
+});
+async function loadCards(){
+  try{
+    const snap = await getDocs(collection(db,'prompts'));
+    gallery.innerHTML='';
+    if(snap.empty){
+      gallery.innerHTML='<div style="color:#888;text-align:center;grid-column:1/-1;padding:60px;">No images yet. Admin login karke upload karo!</div>';
+      return;
+    }
+    let docs = [];
+    snap.forEach(d=> docs.push({id:d.id,...d.data()}));
+    docs.reverse();
+    docs.forEach(data=>{
+      const card = document.createElement('div');
+      card.className='card';
+      const safePrompt = data.prompt.replace(/"/g,'&quot;').replace(/'/g,"\\'");
+      const isAdmin = localStorage.getItem('isAdmin')==='true';
+      card.innerHTML=`<img src="${data.image}" alt="AI Art" loading="lazy"><div class="card-body"><div style="font-size:0.75rem;color:#888;margin-bottom:6px;">📋 ${data.category||'Other'}</div><p class="card-prompt">${data.prompt}</p><div class="card-actions"><button class="copy-btn" onclick="copyPrompt(this, '${safePrompt}')">📋 Copy</button><button class="delete-btn" style="display:${isAdmin?'block':'none'}" onclick="deleteCard('${data.id}')">🗑️</button></div></div>`;
+      gallery.appendChild(card);
+    });
+  }catch(e){
+    console.error(e);
+    gallery.innerHTML=`<div style="color:#ef4444;text-align:center;grid-column:1/-1;padding:20px;">Error: ${e.message}<br>Firebase Console me Firestore enable hai check karo</div>`;
+  }
+}
+loadCards();
+</script>
+</body>
+   </html>
