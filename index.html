@@ -117,12 +117,46 @@ uploadBtn.onclick=async()=>{if(!file) return toast('Photo select karo'); if(!pro
 window.copyPrompt=(t)=>{navigator.clipboard.writeText(t); toast('✅ Prompt copied!');};
 window.copyLink=(l)=>{navigator.clipboard.writeText(l); toast('🔗 Link copied!');};
 window.deleteCard=async(id)=>{if(!isAdmin()) return toast('Admin only'); if(!confirm('Delete?')) return; await deleteDoc(doc(db,'prompts',id)); toast('Deleted'); load();};
-window.openModal=(img,cat,prompt)=>{document.getElementById('modalImg').src=img; document.getElementById('modalCat').textContent=cat; document.getElementById('modalPrompt').textContent=prompt; document.getElementById('modalDown').href=img; document.getElementById('modal').classList.add('open'); document.getElementById('modalCopy').onclick=()=>copyPrompt(prompt);};
-window.closeModal=()=>document.getElementById('modal').classList.remove('open');
+window.openModal=(img,cat,prompt)=>{document.getElementById('modalImg').src=img; document.getElementById('modalCat').textContent=cat; document.getElementById('modalPrompt').textContent=prompt; document.getElementById('modalDown').href=img; document.getElementById('modal').classList.add('open'); document.getElementById('modalCopy').onclick=()=>copyPrompt(prompt); window.history.replaceState(null,null,`?id=${allData.find(x=>(x.imageUrl||x.image)===img)?.id||''}`);};
+window.closeModal=()=>{document.getElementById('modal').classList.remove('open'); window.history.replaceState(null,null,window.location.pathname);};
 document.getElementById('modal').onclick=e=>{if(e.target.id==='modal') closeModal()};
-function render(list){gallery.innerHTML=''; if(!list.length){gallery.innerHTML='<div style="color:#666;column-span:all;text-align:center;padding:50px">No results found 🥲</div>'; return;} list.forEach(d=>{ const div=document.createElement('div'); div.className='card'; div.innerHTML=`<img src="${p.imageUrl || p.image}"> loading="lazy" onclick="openModal('${d.image}','${d.category}','${d.prompt.replace(/'/g,"\\'")}')"><div class="card-body"><div class="cat">📋 ${d.category}</div><p class="prompt">${d.prompt}</p><div class="actions"><button class="btn btn-copy" onclick="copyPrompt(\`${d.prompt.replace(/`/g,'')}\`)">📋 Copy</button><button class="btn btn-link" onclick="copyLink('${d.image}')">🔗</button><button class="btn btn-del ${isAdmin()?'show':''}" onclick="deleteCard('${d.id}')">🗑️</button></div></div>`; gallery.appendChild(div);});}
+
+function render(list){
+  gallery.innerHTML='';
+  if(!list.length){gallery.innerHTML='<div style="color:#666;column-span:all;text-align:center;padding:50px">No results found 🥲</div>'; return;}
+  list.forEach(d=>{
+    const imgSrc = d.imageUrl || d.image || "";
+    const div=document.createElement('div');
+    div.className='card';
+    div.innerHTML=`<img src="${imgSrc}" loading="lazy" onclick="openModal('${imgSrc}','${d.category}','${d.prompt.replace(/'/g,"\\'")}')"><div class="card-body"><div class="cat">📋 ${d.category}</div><p class="prompt">${d.prompt}</p><div class="actions"><button class="btn btn-copy" onclick="copyPrompt(\`${d.prompt.replace(/`/g,'')}\`)">📋 Copy</button><button class="btn btn-link" onclick="copyLink('${window.location.origin}${window.location.pathname}?id=${d.id}')">🔗</button><button class="btn btn-del ${isAdmin()?'show':''}" onclick="deleteCard('${d.id}')">🗑️</button></div></div>`;
+    gallery.appendChild(div);
+  });
+}
+
+// NEW: Direct Photo Link Logic
+function checkDeepLink(){
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  if(id && allData.length){
+    const found = allData.find(p=>p.id===id);
+    if(found){
+      const imgSrc = found.imageUrl || found.image || "";
+      setTimeout(()=> openModal(imgSrc, found.category, found.prompt), 800);
+    }
+  }
+}
+
 async function load(){ try{ const snap=await getDocs(collection(db,'prompts')); allData=[]; snap.forEach(doc=>allData.push({id:doc.id,...doc.data()})); allData.reverse(); applyFilter(); }catch(e){gallery.innerHTML='Error: '+e.message} }
-function applyFilter(){ let f=[...allData]; if(activeCat!=='All') f=f.filter(x=>x.category===activeCat); const q=search.value.toLowerCase(); if(q) f=f.filter(x=>x.prompt.toLowerCase().includes(q)||x.category.toLowerCase().includes(q)); render(f); }
+
+function applyFilter(){
+  let f=[...allData];
+  if(activeCat!=='All') f=f.filter(x=>x.category===activeCat);
+  const q=search.value.toLowerCase();
+  if(q) f=f.filter(x=>x.prompt.toLowerCase().includes(q)||x.category.toLowerCase().includes(q));
+  render(f);
+  checkDeepLink();
+}
+
 document.querySelectorAll('.fpill').forEach(p=>p.onclick=()=>{document.querySelectorAll('.fpill').forEach(x=>x.classList.remove('active')); p.classList.add('active'); activeCat=p.dataset.cat; applyFilter();});
 search.oninput=applyFilter;
 load();
@@ -137,4 +171,4 @@ load();
   <p style="color:#888; font-size:.85rem; margin-top:20px;">📩 alexushshshs@gmail.com</p>
 </footer>
 </body>
-  </html>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      </html>
