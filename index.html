@@ -141,7 +141,10 @@ function checkDeepLink(){
     const found = allData.find(p=>p.id===id);
     if(found){
       const imgSrc = found.imageUrl || found.image || "";
-      setTimeout(()=> openModal(imgSrc, found.category, found.prompt), 800);
+      setTimeout(()=> {
+    openModal(imgSrc, found.category, found.prompt);
+    window.history.replaceState(null, null, window.location.pathname);
+}, 1200);
     }
   }
 }
